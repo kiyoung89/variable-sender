@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>PC Status Monitor</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <style>
+        body { 
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background: #f0f2f5;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+        th {
+            background-color: #4CAF50;
+            color: white;
+        }
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        tr:hover {
+            background-color: #f5f5f5;
+        }
+        .input-form {
+            margin-bottom: 20px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 4px;
+        }
+        input {
+            padding: 8px;
+            margin: 5px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        button {
+            padding: 8px 16px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>PC Status Monitor</h1>
+        
+        <div class="input-form">
+            <input type="text" id="pcNumber" placeholder="PC 번호">
+            <input type="text" id="windowName" placeholder="윈도우 이름">
+            <input type="text" id="level" placeholder="레벨">
+            <input type="text" id="ruby" placeholder="루비">
+            <input type="text" id="gold" placeholder="골드">
+            <button onclick="addData()">추가</button>
+        </div>
+
+        <table id="dataTable">
+            <thead>
+                <tr>
+                    <th>시간</th>
+                    <th>PC 번호</th>
+                    <th>윈도우 이름</th>
+                    <th>레벨</th>
+                    <th>루비</th>
+                    <th>골드</th>
+                </tr>
+            </thead>
+            <tbody id="tableBody">
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        // localStorage에서 데이터 불러오기
+        let data = JSON.parse(localStorage.getItem('pcStatusData')) || [];
+
+        // 초기 테이블 업데이트
+        updateTable();
+
+        function addData() {
+            const pcNumber = document.getElementById('pcNumber').value;
+            const windowName = document.getElementById('windowName').value;
+            const level = document.getElementById('level').value;
+            const ruby = document.getElementById('ruby').value;
+            const gold = document.getElementById('gold').value;
+            const timestamp = new Date().toLocaleString();
+
+            if (pcNumber && windowName && level) {
+                data.unshift({
+                    timestamp,
+                    pcNumber,
+                    windowName,
+                    level,
+                    ruby,
+                    gold
+                });
+
+                // localStorage에 데이터 저장
+                localStorage.setItem('pcStatusData', JSON.stringify(data));
+                updateTable();
+                clearInputs();
+            }
+        }
+
+        function updateTable() {
+            const tbody = document.getElementById('tableBody');
+            tbody.innerHTML = '';
+
+            data.forEach(item => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${item.timestamp}</td>
+                    <td>${item.pcNumber}</td>
+                    <td>${item.windowName}</td>
+                    <td>${item.level}</td>
+                    <td>${item.ruby || '-'}</td>
+                    <td>${item.gold || '-'}</td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        function clearInputs() {
+            document.getElementById('pcNumber').value = '';
+            document.getElementById('windowName').value = '';
+            document.getElementById('level').value = '';
+            document.getElementById('ruby').value = '';
+            document.getElementById('gold').value = '';
+        }
+    </script>
+</body>
+</html>
